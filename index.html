@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus Free API</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+
+* {margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:#05010a;color:#e5e7eb;overflow-x:hidden}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(circle at 20% 20%,#7c3aed33 0%,transparent 50%),
+             radial-gradient(circle at 80% 80%,#ec489933 0%,transparent 50%);
+  z-index:-1
+}
+
+nav{position:sticky;top:0;background:rgba(10,0,20,0.7);backdrop-filter:blur(20px);
+    border-bottom:1px solid #6d28d933;padding:20px 40px;display:flex;justify-content:space-between;
+    align-items:center;z-index:100}
+nav h1{background:linear-gradient(90deg,#a855f7,#ec4899);-webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;font-size:28px;font-weight:800}
+nav a{color:#c4b5fd;text-decoration:none;font-weight:600;margin-left:30px;transition:0.3s}
+nav a:hover{color:#fff}
+
+.hero{text-align:center;padding:120px 20px 80px}
+.hero h1{font-size:64px;font-weight:800;background:linear-gradient(90deg,#a855f7,#ec4899,#f59e0b);
+         -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+.hero p{font-size:20px;color:#a78bfa;margin:20px auto 40px;max-width:600px}
+.btn{display:inline-block;padding:16px 40px;background:linear-gradient(90deg,#a855f7,#ec4899);
+     color:#0f172a;border-radius:999px;text-decoration:none;font-weight:800;font-size:18px;
+     box-shadow:0 0 30px #a855f799;transition:0.3s}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 50px #a855fcc}
+
+.container{max-width:1200px;margin:0 auto;padding:40px 20px}
+.section{margin-bottom:80px}
+.section h2{font-size:36px;margin-bottom:30px;color:#d8b4fe}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.card{background:rgba(30,0,50,0.6);border:1px solid #6d28d955;border-radius:20px;padding:25px;
+      transition:0.3s;cursor:pointer}
+.card:hover{transform:translateY(-5px);border-color:#a855f7;box-shadow:0 10px 40px #a855f733}
+.card h3{color:#f0abfc;font-size:22px;margin-bottom:10px}
+.card p{color:#a78bfa;font-size:14px;margin-bottom:15px}
+.badge{display:inline-block;padding:4px 12px;background:#7c3aed33;border-radius:999px;
+       font-size:12px;color:#c4b5fd}
+
+.endpoint{background:rgba(20,0,35,0.8);border:1px solid #6d28d944;border-radius:16px;
+          margin-bottom:15px;overflow:hidden}
+.ep-head{padding:20px;cursor:pointer;display:flex;align-items:center;gap:15px;transition:0.2s}
+.ep-head:hover{background:rgba(124,58,237,0.1)}
+.method{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:800}
+.method.GET{background:#22c55e;color:#000}
+.method.POST{background:#3b82f6;color:#fff}
+.ep-body{padding:0 20px 20px;display:none;border-top:1px solid #6d28d933}
+.ep-body.active{display:block}
+input,textarea{width:100%;padding:12px;margin:10px 0;border-radius:12px;border:1px solid #6d28d955;
+               background:rgba(10,0,20,0.8);color:#fff;font-size:14px}
+button{padding:12px 24px;background:linear-gradient(90deg,#a855f7,#ec4899);border:none;
+       border-radius:12px;color:#0f172a;font-weight:800;cursor:pointer;margin-top:10px}
+pre{background:#000;padding:15px;border-radius:12px;overflow-x:auto;margin-top:15px;font-size:13px}
+.back{color:#a5b4fc;text-decoration:none;display:inline-block;margin-bottom:20px}
+
+footer{text-align:center;padding:60px 20px;color:#6b7280;border-top:1px solid #6d28d933}
+.about{max-width:800px;margin:0 auto;text-align:center;padding:60px 20px}
+.about h2{font-size:42px;margin-bottom:20px;background:linear-gradient(90deg,#a855f7,#ec4899);
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.about p{color:#a78bfa;font-size:18px;line-height:1.8}
+
+@media(max-width:768px){
+ .hero h1{font-size:40px}
+  nav{padding:15px 20px}
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>Nexus Free</h1>
+  <div>
+    <a href="#home">Home</a>
+    <a href="#categories">Categories</a>
+    <a href="#about">About</a>
+  </div>
+</nav>
+
+<div id="home" class="hero">
+  <h1>Nexus Free API Hub</h1>
+  <p>100+ Free APIs for AI, Downloader, Tools, and more. Fast, reliable, no API key needed.</p>
+  <a href="#categories" class="btn">Get Started</a>
+</div>
+
+<div id="categories" class="container">
+  <div class="section">
+    <h2>Categories</h2>
+    <div id="catGrid" class="grid"></div>
+  </div>
+
+  <div id="endpointSection" class="section" style="display:none">
+    <a href="#" class="back" onclick="showCategories()">← Back to Categories</a>
+    <h2 id="catTitle"></h2>
+    <div id="endpointList"></div>
+  </div>
+</div>
+
+<div id="about" class="about">
+  <h2>About Nexus Free</h2>
+  <p>Nexus Free is a free API hub built for developers. We collect and proxy the best public APIs so you can build faster without worrying about limits, keys, or complexity. New endpoints are added daily.</p>
+  <p style="margin-top:20px">Just add your API to the repo and it appears here automatically.</p>
+</div>
+
+<footer>
+  © 2025 Nexus Free API. Built with Vercel. All rights reserved.
+</footer>
+
+<script>
+const API_BASE = '/api';
+
+async function loadCategories(){
+  const res = await fetch(`${API_BASE}/categories`);
+  const data = await res.json();
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+
+  data.categories.forEach(cat => {
+    grid.innerHTML += `
+      <div class="card" onclick="loadEndpoints('${cat.slug}')">
+        <h3>${cat.name}</h3>
+        <p>${cat.desc || 'Explore endpoints'}</p>
+        <span class="badge">${cat.count} Endpoints</span>
+      </div>
+    `;
+  });
+}
+
+async function loadEndpoints(slug){
+  const res = await fetch(`${API_BASE}/endpoints?category=${slug}`);
+  const data = await res.json();
+
+  document.getElementById('catTitle').textContent = data.category;
+  document.getElementById('endpointSection').style.display = 'block';
+  document.getElementById('endpointSection').scrollIntoView({behavior:'smooth'});
+
+  const list = document.getElementById('endpointList');
+  list.innerHTML = '';
+
+  data.endpoints.forEach(ep => {
+    const paramsHtml = ep.params.map(p =>
+      `<input type="text" id="${ep.path}-${p.name}" placeholder="${p.name} - ${p.desc}" ${p.required?'required':''}>`
+    ).join('');
+
+    list.innerHTML += `
+      <div class="endpoint">
+        <div class="ep-head" onclick="toggleEp('${ep.path}')">
+          <span class="method ${ep.method}">${ep.method}</span>
+          <strong>${ep.name}</strong>
+          <span style="color:#a78bfa">${ep.path}</span>
+        </div>
+        <div class="ep-body" id="body-${ep.path}">
+          <p style="color:#a78bfa;margin-bottom:10px">${ep.desc}</p>
+          ${paramsHtml}
+          <button onclick="testApi('${ep.path}')">Execute</button>
+          <pre id="out-${ep.path}">Click Execute to test</pre>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function toggleEp(path){
+  document.getElementById(`body-${path}`).classList.toggle('active');
+}
+
+async function testApi(path){
+  const inputs = document.querySelectorAll(`#body-${path} input`);
+  let url = path + '?';
+  inputs.forEach(i => {
+    if(i.value) url += `${i.id.split('-')[1]}=${encodeURIComponent(i.value)}&`;
+  });
+
+  const out = document.getElementById(`out-${path}`);
+  out.textContent = 'Loading...';
+
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+    out.textContent = JSON.stringify(data,null,2);
+  }catch(e){
+    out.textContent = 'Error: ' + e.message;
+  }
+}
+
+function showCategories(){
+  document.getElementById('endpointSection').style.display = 'none';
+  window.scrollTo({top:document.getElementById('categories').offsetTop-100,behavior:'smooth'});
+}
+
+loadCategories();
+</script>
+
+</body>
+</html>
