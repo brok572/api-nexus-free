@@ -20,6 +20,13 @@ export const config = {
           name: "Gemini",
           desc: "Google Gemini AI",
           params: [{name:"text",required:true,desc:"Your message"}]
+        },
+        {
+          method: "GET",
+          path: "/ai/copilot",
+          name: "Copilot",
+          desc: "Microsoft Copilot AI chat",
+          params: [{name:"text",required:true,desc:"Your message"}]
         }
       ]
     },
